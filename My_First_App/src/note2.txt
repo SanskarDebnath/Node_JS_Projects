@@ -1,0 +1,589 @@
+import React, { useState } from "react";
+import {
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Paper,
+  Checkbox,
+  FormControlLabel,
+  useMediaQuery,
+  useTheme,
+  Snackbar,
+  Alert
+} from "@mui/material";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#6366f1',
+      light: '#818cf8',
+      dark: '#4f46e5',
+    },
+    secondary: {
+      main: '#94a3b8',
+    },
+  },
+  typography: {
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    h5: {
+      fontWeight: 600,
+    },
+  },
+  shape: {
+    borderRadius: 12,
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 500,
+          borderRadius: 8,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+        },
+      },
+    },
+  },
+});
+
+interface Address {
+  houseNo: string;
+  streetName: string;
+  locality: string;
+  po: string;
+  ps: string;
+  pincode: string;
+  state: string;
+  city: string;
+  district: string;
+}
+
+const AddressDetails: React.FC = () => {
+  const themeHook = useTheme();
+  const isMobile = useMediaQuery(themeHook.breakpoints.down("md"));
+
+  const [permanentAddress, setPermanentAddress] = useState<Address>({
+    houseNo: "",
+    streetName: "",
+    locality: "",
+    po: "",
+    ps: "",
+    pincode: "",
+    state: "",
+    city: "",
+    district: ""
+  });
+
+  const [currentAddress, setCurrentAddress] = useState<Address>({
+    houseNo: "",
+    streetName: "",
+    locality: "",
+    po: "",
+    ps: "",
+    pincode: "",
+    state: "",
+    city: "",
+    district: ""
+  });
+
+  const [isSameAddress, setIsSameAddress] = useState<boolean>(false);
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
+  const handlePermanentAddressChange = (field: keyof Address, value: string) => {
+    const updatedAddress = { ...permanentAddress, [field]: value };
+    setPermanentAddress(updatedAddress);
+
+    if (isSameAddress) {
+      setCurrentAddress(updatedAddress);
+    }
+  };
+
+  const handleCurrentAddressChange = (field: keyof Address, value: string) => {
+    setCurrentAddress({ ...currentAddress, [field]: value });
+  };
+
+  const handleSameAddressToggle = (checked: boolean) => {
+    setIsSameAddress(checked);
+    if (checked) {
+      setCurrentAddress(permanentAddress);
+    } else {
+      setCurrentAddress({
+        houseNo: "",
+        streetName: "",
+        locality: "",
+        po: "",
+        ps: "",
+        pincode: "",
+        state: "",
+        city: "",
+        district: ""
+      });
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("Permanent Address:", permanentAddress);
+    console.log("Current Address:", currentAddress);
+
+    setOpenSnackbar(true);
+  };
+
+  return (
+    <ThemeProvider theme={theme}>
+      <Box
+        sx={{
+          padding: { xs: 2, md: 3 },
+          backgroundColor: "#f8fafc",
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-start",
+        }}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            width: { xs: "90%", md: "80%" },
+            margin: "auto",
+            padding: { xs: 3, md: 4 },
+            borderRadius: 4,
+            backgroundColor: "white",
+            boxShadow:
+              "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontWeight: "600",
+              marginBottom: 2,
+              color: "#1e293b",
+              background: "linear-gradient(45deg, #6366f1 30%, #818cf8 90%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              textAlign: "center",
+            }}
+          >
+            Address Details
+          </Typography>
+
+          <form onSubmit={handleSubmit}>
+            <Card sx={{ marginBottom: 3, border: "1px solid #e2e8f0" }}>
+              <CardContent sx={{ padding: 3 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: "#334155",
+                    fontWeight: 600,
+                    marginBottom: 3,
+                    paddingBottom: 2,
+                    borderBottom: "2px solid #6366f1",
+                  }}
+                >
+                  Permanent Address
+                </Typography>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" },
+                    gap: 2,
+                    marginBottom: 2,
+                  }}
+                >
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="House No./Vill/Town"
+                    value={permanentAddress.houseNo}
+                    onChange={(e) =>
+                      handlePermanentAddressChange("houseNo", e.target.value)
+                    }
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Street Name"
+                    value={permanentAddress.streetName}
+                    onChange={(e) =>
+                      handlePermanentAddressChange("streetName", e.target.value)
+                    }
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Locality"
+                    value={permanentAddress.locality}
+                    onChange={(e) =>
+                      handlePermanentAddressChange("locality", e.target.value)
+                    }
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" },
+                    gap: 2,
+                    marginBottom: 2,
+                  }}
+                >
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="P.O. *"
+                    value={permanentAddress.po}
+                    onChange={(e) =>
+                      handlePermanentAddressChange("po", e.target.value)
+                    }
+                    required
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="P.S. *"
+                    value={permanentAddress.ps}
+                    onChange={(e) =>
+                      handlePermanentAddressChange("ps", e.target.value)
+                    }
+                    required
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="PINCODE *"
+                    value={permanentAddress.pincode}
+                    onChange={(e) =>
+                      handlePermanentAddressChange("pincode", e.target.value)
+                    }
+                    required
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                    inputProps={{ maxLength: 6 }}
+                  />
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" },
+                    gap: 2,
+                    marginBottom: 2,
+                  }}
+                >
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="State/UT"
+                    value={permanentAddress.state}
+                    onChange={(e) =>
+                      handlePermanentAddressChange("state", e.target.value)
+                    }
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="City Name"
+                    value={permanentAddress.city}
+                    onChange={(e) =>
+                      handlePermanentAddressChange("city", e.target.value)
+                    }
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="District"
+                    value={permanentAddress.district}
+                    onChange={(e) =>
+                      handlePermanentAddressChange("district", e.target.value)
+                    }
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+                </Box>
+              </CardContent>
+            </Card>
+
+            <Box
+              sx={{
+                marginBottom: 3,
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isSameAddress}
+                    onChange={(e) =>
+                      handleSameAddressToggle(e.target.checked)
+                    }
+                    sx={{
+                      color: "#6366f1",
+                      "&.Mui-checked": {
+                        color: "#6366f1",
+                      },
+                    }}
+                  />
+                }
+                label="Current Address is Same as Permanent Address"
+                sx={{ fontWeight: 500 }}
+              />
+            </Box>
+
+            <Card
+              sx={{
+                marginBottom: 3,
+                border: "1px solid #e2e8f0",
+                opacity: isSameAddress ? 0.7 : 1,
+                transition: "opacity 0.3s ease",
+              }}
+            >
+              <CardContent sx={{ padding: 3 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: "#334155",
+                    fontWeight: 600,
+                    marginBottom: 3,
+                    paddingBottom: 2,
+                    borderBottom: "2px solid #6366f1",
+                  }}
+                >
+                  Current Address
+                </Typography>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" },
+                    gap: 2,
+                    marginBottom: 2,
+                  }}
+                >
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="House No./Vill/Town"
+                    value={currentAddress.houseNo}
+                    onChange={(e) =>
+                      handleCurrentAddressChange("houseNo", e.target.value)
+                    }
+                    disabled={isSameAddress}
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Street Name"
+                    value={currentAddress.streetName}
+                    onChange={(e) =>
+                      handleCurrentAddressChange("streetName", e.target.value)
+                    }
+                    disabled={isSameAddress}
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="Locality"
+                    value={currentAddress.locality}
+                    onChange={(e) =>
+                      handleCurrentAddressChange("locality", e.target.value)
+                    }
+                    disabled={isSameAddress}
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" },
+                    gap: 2,
+                    marginBottom: 2,
+                  }}
+                >
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="P.O. *"
+                    value={currentAddress.po}
+                    onChange={(e) =>
+                      handleCurrentAddressChange("po", e.target.value)
+                    }
+                    required
+                    disabled={isSameAddress}
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="P.S. *"
+                    value={currentAddress.ps}
+                    onChange={(e) =>
+                      handleCurrentAddressChange("ps", e.target.value)
+                    }
+                    required
+                    disabled={isSameAddress}
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="PINCODE *"
+                    value={currentAddress.pincode}
+                    onChange={(e) =>
+                      handleCurrentAddressChange("pincode", e.target.value)
+                    }
+                    required
+                    disabled={isSameAddress}
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                    inputProps={{ maxLength: 6 }}
+                  />
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" },
+                    gap: 2,
+                    marginBottom: 2,
+                  }}
+                >
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="State/UT"
+                    value={currentAddress.state}
+                    onChange={(e) =>
+                      handleCurrentAddressChange("state", e.target.value)
+                    }
+                    disabled={isSameAddress}
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="City Name"
+                    value={currentAddress.city}
+                    onChange={(e) =>
+                      handleCurrentAddressChange("city", e.target.value)
+                    }
+                    disabled={isSameAddress}
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    size="small"
+                    label="District"
+                    value={currentAddress.district}
+                    onChange={(e) =>
+                      handleCurrentAddressChange("district", e.target.value)
+                    }
+                    disabled={isSameAddress}
+                    InputLabelProps={{ sx: { fontSize: "0.9rem" } }}
+                  />
+                </Box>
+              </CardContent>
+            </Card>
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                paddingTop: 3,
+                borderTop: "1px solid #e2e8f0",
+                flexDirection: { xs: "column", sm: "row" },
+                gap: { xs: 2, sm: 0 },
+              }}
+            >
+              <Button
+                variant="outlined"
+                sx={{
+                  borderRadius: 2,
+                  px: 3,
+                  width: { xs: "100%", sm: "auto" },
+                }}
+              >
+                Previous
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  borderRadius: 2,
+                  px: 4,
+                  width: { xs: "100%", sm: "auto" },
+                  background: "linear-gradient(90deg, #6366f1 0%, #818cf8 100%)",
+                  "&:hover": {
+                    background:
+                      "linear-gradient(90deg, #4f46e5 0%, #6366f1 100%)",
+                  },
+                }}
+              >
+                Save & Next ►
+              </Button>
+            </Box>
+          </form>
+        </Paper>
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={3000}
+          onClose={() => setOpenSnackbar(false)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <Alert
+            onClose={() => setOpenSnackbar(false)}
+            severity="success"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            Address details submitted successfully!
+          </Alert>
+        </Snackbar>
+      </Box>
+    </ThemeProvider>
+  );
+};
+
+export default AddressDetails;
